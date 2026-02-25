@@ -1,12 +1,15 @@
 /**
  * Visual effects: particle system, hover color shifts.
  */
-import * as THREE from 'three';
+import * as THREE from "three";
+
+const textureLoader = new THREE.TextureLoader();
+const textureCache = {};
 
 const PARTICLE_CONFIG = {
   high: { count: 300, innerRadius: 4, outerRadius: 6 },
   medium: { count: 200, innerRadius: 4, outerRadius: 6 },
-  low: { count: 150, innerRadius: 4, outerRadius: 6 }
+  low: { count: 150, innerRadius: 4, outerRadius: 6 },
 };
 
 export class ParticleSystem {
@@ -14,7 +17,7 @@ export class ParticleSystem {
    * @param {THREE.Scene} scene
    * @param {'low'|'medium'|'high'} quality
    */
-  constructor(scene, quality = 'high') {
+  constructor(scene, quality = "high") {
     const config = PARTICLE_CONFIG[quality] || PARTICLE_CONFIG.high;
     this.count = config.count;
     this.innerRadius = config.innerRadius;
@@ -27,7 +30,9 @@ export class ParticleSystem {
     for (let i = 0; i < this.count; i++) {
       const i3 = i * 3;
       // Random point in spherical shell
-      const r = this.innerRadius + Math.random() * (this.outerRadius - this.innerRadius);
+      const r =
+        this.innerRadius +
+        Math.random() * (this.outerRadius - this.innerRadius);
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
@@ -51,7 +56,7 @@ export class ParticleSystem {
     }
 
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
     const material = new THREE.PointsMaterial({
       color: 0x4a90d9,
@@ -60,7 +65,7 @@ export class ParticleSystem {
       transparent: true,
       opacity: 0.6,
       blending: THREE.AdditiveBlending,
-      depthWrite: false
+      depthWrite: false,
     });
 
     this.points = new THREE.Points(geometry, material);
@@ -80,7 +85,8 @@ export class ParticleSystem {
 
     // Ease hover factor
     const targetHover = isHovered ? 1 : 0;
-    this.hoverFactor += (targetHover - this.hoverFactor) * (1 - Math.exp(-3 * deltaTime));
+    this.hoverFactor +=
+      (targetHover - this.hoverFactor) * (1 - Math.exp(-3 * deltaTime));
 
     const positions = this.points.geometry.attributes.position.array;
     const freq = 0.3;
@@ -93,9 +99,14 @@ export class ParticleSystem {
       const phase = this.phases[i];
       const t = this.elapsed * freq * speedMultiplier + phase;
 
-      positions[i3] = this.basePositions[i3] * spreadMultiplier + Math.sin(t) * amplitude;
-      positions[i3 + 1] = this.basePositions[i3 + 1] * spreadMultiplier + Math.cos(t * 0.7) * amplitude;
-      positions[i3 + 2] = this.basePositions[i3 + 2] * spreadMultiplier + Math.sin(t * 1.3) * amplitude * 0.5;
+      positions[i3] =
+        this.basePositions[i3] * spreadMultiplier + Math.sin(t) * amplitude;
+      positions[i3 + 1] =
+        this.basePositions[i3 + 1] * spreadMultiplier +
+        Math.cos(t * 0.7) * amplitude;
+      positions[i3 + 2] =
+        this.basePositions[i3 + 2] * spreadMultiplier +
+        Math.sin(t * 1.3) * amplitude * 0.5;
     }
 
     this.points.geometry.attributes.position.needsUpdate = true;
@@ -131,31 +142,158 @@ export function setBaseColor(hexColor) {
 
   // Hover color: lighter version
   baseColor.getHSL(_tmpHSL);
-  hoverColor.setHSL(_tmpHSL.h, Math.min(1, _tmpHSL.s * 1.3), Math.min(0.65, _tmpHSL.l * 1.5));
+  hoverColor.setHSL(
+    _tmpHSL.h,
+    Math.min(1, _tmpHSL.s * 1.3),
+    Math.min(0.65, _tmpHSL.l * 1.5),
+  );
 
   // Emissive: dark version of the base
   baseEmissive.setHSL(_tmpHSL.h, _tmpHSL.s * 0.8, _tmpHSL.l * 0.4);
 
   // Hover emissive: bright saturated version
-  hoverEmissive.setHSL(_tmpHSL.h, Math.min(1, _tmpHSL.s * 1.2), Math.min(0.8, _tmpHSL.l * 2.5));
+  hoverEmissive.setHSL(
+    _tmpHSL.h,
+    Math.min(1, _tmpHSL.s * 1.2),
+    Math.min(0.8, _tmpHSL.l * 2.5),
+  );
 
   baseEmissiveIntensity = 0.3;
   hoverEmissiveIntensity = 0.6;
 }
 
 // Texture presets — modify material surface properties
+// Add texturePath to apply an image texture to material.map
 const TEXTURE_PRESETS = {
-  metallic:  { metalness: 0.7, roughness: 0.25, wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.3, hoverEI: 0.6 },
-  matte:     { metalness: 0.0, roughness: 0.9,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.2, hoverEI: 0.4 },
-  chrome:    { metalness: 1.0, roughness: 0.0,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.1, hoverEI: 0.3 },
-  neon:      { metalness: 0.0, roughness: 0.3,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.8, hoverEI: 1.5 },
-  glass:     { metalness: 0.1, roughness: 0.05, wireframe: false, transparent: true,  opacity: 0.55, baseEI: 0.2, hoverEI: 0.5 },
-  plastic:   { metalness: 0.0, roughness: 0.4,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.2, hoverEI: 0.5 },
-  wireframe: { metalness: 0.3, roughness: 0.5,  wireframe: true,  transparent: false, opacity: 1.0,  baseEI: 0.5, hoverEI: 1.0 },
+  metallic: {
+    metalness: 0.7,
+    roughness: 0.25,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.3,
+    hoverEI: 0.6,
+  },
+  matte: {
+    metalness: 0.0,
+    roughness: 0.9,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.2,
+    hoverEI: 0.4,
+  },
+  chrome: {
+    metalness: 1.0,
+    roughness: 0.0,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.1,
+    hoverEI: 0.3,
+  },
+  neon: {
+    metalness: 0.0,
+    roughness: 0.3,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.8,
+    hoverEI: 1.5,
+  },
+  glass: {
+    metalness: 0.1,
+    roughness: 0.05,
+    wireframe: false,
+    transparent: true,
+    opacity: 0.55,
+    baseEI: 0.2,
+    hoverEI: 0.5,
+  },
+  plastic: {
+    metalness: 0.0,
+    roughness: 0.4,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.2,
+    hoverEI: 0.5,
+  },
+  wireframe: {
+    metalness: 0.3,
+    roughness: 0.5,
+    wireframe: true,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.5,
+    hoverEI: 1.0,
+  },
+  wood: {
+    metalness: 0.0,
+    roughness: 0.7,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.1,
+    hoverEI: 0.3,
+    texturePath: "./assets/textures/wood.jpg",
+  },
+  marble: {
+    metalness: 0.3,
+    roughness: 0.2,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.2,
+    hoverEI: 0.4,
+    texturePath: "./assets/textures/marble.jpg",
+  },
+  brick: {
+    metalness: 0.0,
+    roughness: 0.9,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.1,
+    hoverEI: 0.3,
+    texturePath: "./assets/textures/brick.jpg",
+  },
+  stone: {
+    metalness: 0.1,
+    roughness: 0.8,
+    wireframe: false,
+    transparent: false,
+    opacity: 1.0,
+    baseEI: 0.1,
+    hoverEI: 0.3,
+    texturePath: "./assets/textures/stone.jpg",
+  },
 };
 
 /**
+ * Load a texture with caching.
+ * @param {string} path
+ * @returns {THREE.Texture}
+ */
+function loadCachedTexture(path) {
+  if (!textureCache[path]) {
+    textureCache[path] = textureLoader.load(
+      path,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+      },
+      undefined,
+      (err) => {
+        console.warn("Failed to load texture:", path, err);
+      },
+    );
+  }
+  return textureCache[path];
+}
+
+/**
  * Apply a texture preset to the material.
+ * Supports both solid presets and image-based textures.
  * @param {THREE.MeshStandardMaterial} material
  * @param {string} presetName
  */
@@ -169,6 +307,13 @@ export function applyTexturePreset(material, presetName) {
   material.transparent = preset.transparent;
   material.opacity = preset.opacity;
   material.depthWrite = !preset.transparent;
+
+  // Apply or clear image texture
+  if (preset.texturePath) {
+    material.map = loadCachedTexture(preset.texturePath);
+  } else {
+    material.map = null;
+  }
   material.needsUpdate = true;
 
   baseEmissiveIntensity = preset.baseEI;
@@ -183,13 +328,15 @@ export function applyTexturePreset(material, presetName) {
  */
 export function updateMaterialOnHover(material, isHovered, deltaTime) {
   const target = isHovered ? 1 : 0;
-  currentHoverFactor += (target - currentHoverFactor) * (1 - Math.exp(-3 * deltaTime));
+  currentHoverFactor +=
+    (target - currentHoverFactor) * (1 - Math.exp(-3 * deltaTime));
 
   _tmpColor.copy(baseColor).lerp(hoverColor, currentHoverFactor);
   _tmpEmissive.copy(baseEmissive).lerp(hoverEmissive, currentHoverFactor);
 
   material.color.copy(_tmpColor);
   material.emissive.copy(_tmpEmissive);
-  material.emissiveIntensity = baseEmissiveIntensity
-    + (hoverEmissiveIntensity - baseEmissiveIntensity) * currentHoverFactor;
+  material.emissiveIntensity =
+    baseEmissiveIntensity +
+    (hoverEmissiveIntensity - baseEmissiveIntensity) * currentHoverFactor;
 }
