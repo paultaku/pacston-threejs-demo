@@ -107,19 +107,41 @@ export class ParticleSystem {
   }
 }
 
-// Color targets for hover transitions
-const BASE_COLOR = new THREE.Color(0x1a5276);
-const HOVER_COLOR = new THREE.Color(0x2980b9);
-const BASE_EMISSIVE = new THREE.Color(0x0a2a3f);
-const HOVER_EMISSIVE = new THREE.Color(0x4fc3f7);
-const BASE_EMISSIVE_INTENSITY = 0.3;
-const HOVER_EMISSIVE_INTENSITY = 0.6;
+// Color targets for hover transitions (mutable for color picker)
+const baseColor = new THREE.Color(0x1a5276);
+const hoverColor = new THREE.Color(0x2980b9);
+const baseEmissive = new THREE.Color(0x0a2a3f);
+const hoverEmissive = new THREE.Color(0x4fc3f7);
+let baseEmissiveIntensity = 0.3;
+let hoverEmissiveIntensity = 0.6;
 
 // Temp colors to avoid allocations
 const _tmpColor = new THREE.Color();
 const _tmpEmissive = new THREE.Color();
+const _tmpHSL = {};
 
 let currentHoverFactor = 0;
+
+/**
+ * Derive hover and emissive colors from a base color.
+ * @param {string} hexColor - CSS hex color like "#1a5276"
+ */
+export function setBaseColor(hexColor) {
+  baseColor.set(hexColor);
+
+  // Hover color: lighter version
+  baseColor.getHSL(_tmpHSL);
+  hoverColor.setHSL(_tmpHSL.h, Math.min(1, _tmpHSL.s * 1.3), Math.min(0.65, _tmpHSL.l * 1.5));
+
+  // Emissive: dark version of the base
+  baseEmissive.setHSL(_tmpHSL.h, _tmpHSL.s * 0.8, _tmpHSL.l * 0.4);
+
+  // Hover emissive: bright saturated version
+  hoverEmissive.setHSL(_tmpHSL.h, Math.min(1, _tmpHSL.s * 1.2), Math.min(0.8, _tmpHSL.l * 2.5));
+
+  baseEmissiveIntensity = 0.3;
+  hoverEmissiveIntensity = 0.6;
+}
 
 /**
  * Smoothly lerp material colors based on hover state.
@@ -131,11 +153,11 @@ export function updateMaterialOnHover(material, isHovered, deltaTime) {
   const target = isHovered ? 1 : 0;
   currentHoverFactor += (target - currentHoverFactor) * (1 - Math.exp(-3 * deltaTime));
 
-  _tmpColor.copy(BASE_COLOR).lerp(HOVER_COLOR, currentHoverFactor);
-  _tmpEmissive.copy(BASE_EMISSIVE).lerp(HOVER_EMISSIVE, currentHoverFactor);
+  _tmpColor.copy(baseColor).lerp(hoverColor, currentHoverFactor);
+  _tmpEmissive.copy(baseEmissive).lerp(hoverEmissive, currentHoverFactor);
 
   material.color.copy(_tmpColor);
   material.emissive.copy(_tmpEmissive);
-  material.emissiveIntensity = BASE_EMISSIVE_INTENSITY
-    + (HOVER_EMISSIVE_INTENSITY - BASE_EMISSIVE_INTENSITY) * currentHoverFactor;
+  material.emissiveIntensity = baseEmissiveIntensity
+    + (hoverEmissiveIntensity - baseEmissiveIntensity) * currentHoverFactor;
 }

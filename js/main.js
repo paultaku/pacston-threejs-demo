@@ -1,12 +1,23 @@
 /**
  * Main bootstrap: initializes scene, loads logo, wires all systems.
  */
-import { checkWebGLSupport, showFallback, hideLoading, debounce, detectQualityTier, dispose } from './utils.js';
-import { createScene } from './scene.js';
-import { createLogo, updateLogoText } from './logo.js';
-import { AnimationController, createAnimationLoop } from './animation.js';
-import { InteractionManager } from './interaction.js';
-import { ParticleSystem, updateMaterialOnHover } from './effects.js';
+import {
+  checkWebGLSupport,
+  showFallback,
+  hideLoading,
+  debounce,
+  detectQualityTier,
+  dispose,
+} from "./utils.js";
+import { createScene } from "./scene.js";
+import { createLogo, updateLogoText } from "./logo.js";
+import { AnimationController, createAnimationLoop } from "./animation.js";
+import { InteractionManager } from "./interaction.js";
+import {
+  ParticleSystem,
+  updateMaterialOnHover,
+  setBaseColor,
+} from "./effects.js";
 
 const LOADING_TIMEOUT_MS = 15000;
 
@@ -17,16 +28,16 @@ async function init() {
     return;
   }
 
-  const canvas = document.getElementById('three-canvas');
+  const canvas = document.getElementById("three-canvas");
   if (!canvas) {
-    console.error('Canvas element not found');
+    console.error("Canvas element not found");
     showFallback();
     return;
   }
 
   // Loading timeout
   const loadingTimer = setTimeout(() => {
-    console.error('Loading timed out');
+    console.error("Loading timed out");
     showFallback();
   }, LOADING_TIMEOUT_MS);
 
@@ -45,7 +56,12 @@ async function init() {
     const animationController = new AnimationController();
 
     // Interaction manager
-    const interaction = new InteractionManager(canvas, camera, logoMesh, animationController);
+    const interaction = new InteractionManager(
+      canvas,
+      camera,
+      logoMesh,
+      animationController,
+    );
 
     // Particle system
     const particleSystem = new ParticleSystem(scene, quality);
@@ -61,19 +77,29 @@ async function init() {
       renderer.setSize(width, height);
       composer.setSize(width, height);
     }, 150);
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Clear loading timeout and hide overlay
     clearTimeout(loadingTimer);
     hideLoading();
 
     // Text input — update 3D text as user types
-    const textInput = document.getElementById('text-input');
+    const textInput = document.getElementById("text-input");
     if (textInput) {
-      textInput.addEventListener('input', () => {
+      textInput.addEventListener("input", () => {
         updateLogoText(logoMesh, textInput.value);
       });
     }
+
+    // Color sidebar — update material color on swatch click
+    const swatches = document.querySelectorAll(".color-swatch");
+    swatches.forEach((swatch) => {
+      swatch.addEventListener("click", () => {
+        swatches.forEach((s) => s.classList.remove("active"));
+        swatch.classList.add("active");
+        setBaseColor(swatch.dataset.color);
+      });
+    });
 
     // Start animation loop
     const loop = createAnimationLoop({
@@ -83,7 +109,7 @@ async function init() {
       composer,
       interaction,
       logoMaterial,
-      updateMaterial: updateMaterialOnHover
+      updateMaterial: updateMaterialOnHover,
     });
 
     // Cleanup function (for potential SPA embedding)
@@ -94,11 +120,10 @@ async function init() {
       dispose(scene);
       composer.dispose();
       renderer.dispose();
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
-
   } catch (error) {
-    console.error('Failed to initialize 3D demo:', error);
+    console.error("Failed to initialize 3D demo:", error);
     clearTimeout(loadingTimer);
     showFallback();
   }
