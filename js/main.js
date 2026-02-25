@@ -17,6 +17,7 @@ import {
   ParticleSystem,
   updateMaterialOnHover,
   setBaseColor,
+  applyTexturePreset,
 } from "./effects.js";
 
 const LOADING_TIMEOUT_MS = 15000;
@@ -91,13 +92,35 @@ async function init() {
       });
     }
 
-    // Color sidebar — update material color on swatch click
+    // Sidebar tab switching
+    const sidebarTabs = document.querySelectorAll(".sidebar-tab");
+    const sidebarPanels = document.querySelectorAll(".sidebar-panel");
+    sidebarTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        sidebarTabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+        const panelId = tab.dataset.panel + "-panel";
+        sidebarPanels.forEach((p) => p.classList.toggle("hidden", p.id !== panelId));
+      });
+    });
+
+    // Color swatches — update material color
     const swatches = document.querySelectorAll(".color-swatch");
     swatches.forEach((swatch) => {
       swatch.addEventListener("click", () => {
         swatches.forEach((s) => s.classList.remove("active"));
         swatch.classList.add("active");
         setBaseColor(swatch.dataset.color);
+      });
+    });
+
+    // Texture options — switch material texture preset
+    const textureOptions = document.querySelectorAll(".texture-option");
+    textureOptions.forEach((option) => {
+      option.addEventListener("click", () => {
+        textureOptions.forEach((o) => o.classList.remove("active"));
+        option.classList.add("active");
+        applyTexturePreset(logoMaterial, option.dataset.texture);
       });
     });
 

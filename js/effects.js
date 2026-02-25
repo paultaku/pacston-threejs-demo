@@ -143,6 +143,38 @@ export function setBaseColor(hexColor) {
   hoverEmissiveIntensity = 0.6;
 }
 
+// Texture presets — modify material surface properties
+const TEXTURE_PRESETS = {
+  metallic:  { metalness: 0.7, roughness: 0.25, wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.3, hoverEI: 0.6 },
+  matte:     { metalness: 0.0, roughness: 0.9,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.2, hoverEI: 0.4 },
+  chrome:    { metalness: 1.0, roughness: 0.0,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.1, hoverEI: 0.3 },
+  neon:      { metalness: 0.0, roughness: 0.3,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.8, hoverEI: 1.5 },
+  glass:     { metalness: 0.1, roughness: 0.05, wireframe: false, transparent: true,  opacity: 0.55, baseEI: 0.2, hoverEI: 0.5 },
+  plastic:   { metalness: 0.0, roughness: 0.4,  wireframe: false, transparent: false, opacity: 1.0,  baseEI: 0.2, hoverEI: 0.5 },
+  wireframe: { metalness: 0.3, roughness: 0.5,  wireframe: true,  transparent: false, opacity: 1.0,  baseEI: 0.5, hoverEI: 1.0 },
+};
+
+/**
+ * Apply a texture preset to the material.
+ * @param {THREE.MeshStandardMaterial} material
+ * @param {string} presetName
+ */
+export function applyTexturePreset(material, presetName) {
+  const preset = TEXTURE_PRESETS[presetName];
+  if (!preset) return;
+
+  material.metalness = preset.metalness;
+  material.roughness = preset.roughness;
+  material.wireframe = preset.wireframe;
+  material.transparent = preset.transparent;
+  material.opacity = preset.opacity;
+  material.depthWrite = !preset.transparent;
+  material.needsUpdate = true;
+
+  baseEmissiveIntensity = preset.baseEI;
+  hoverEmissiveIntensity = preset.hoverEI;
+}
+
 /**
  * Smoothly lerp material colors based on hover state.
  * @param {THREE.MeshStandardMaterial} material

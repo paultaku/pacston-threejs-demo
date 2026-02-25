@@ -54,55 +54,62 @@
       />
     </div>
 
-    <div id="color-sidebar" class="color-sidebar">
-      <div
-        class="color-swatch active"
-        data-color="#1a5276"
-        style="background: #1a5276"
-        title="Ocean Blue"
-      ></div>
-      <div
-        class="color-swatch"
-        data-color="#6c3483"
-        style="background: #6c3483"
-        title="Purple"
-      ></div>
-      <div
-        class="color-swatch"
-        data-color="#922b21"
-        style="background: #922b21"
-        title="Crimson"
-      ></div>
-      <div
-        class="color-swatch"
-        data-color="#b7950b"
-        style="background: #b7950b"
-        title="Gold"
-      ></div>
-      <div
-        class="color-swatch"
-        data-color="#1e8449"
-        style="background: #1e8449"
-        title="Emerald"
-      ></div>
-      <div
-        class="color-swatch"
-        data-color="#ca6f1e"
-        style="background: #ca6f1e"
-        title="Amber"
-      ></div>
-      <div
-        class="color-swatch"
-        data-color="#148f77"
-        style="background: #148f77"
-        title="Teal"
-      ></div>
-      <div
-        class="color-swatch"
-        data-color="#c2185b"
-        style="background: #c2185b"
-        title="Pink"
-      ></div>
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" data-panel="color" title="Color">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="8" cy="8" r="3" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="sidebar-tab" data-panel="texture" title="Texture">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1"/>
+            <line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="1"/>
+          </svg>
+        </button>
+      </div>
+      <div class="sidebar-panel" id="color-panel">
+        <div class="color-swatch active" data-color="#1a5276" style="background: #1a5276" title="Ocean Blue"></div>
+        <div class="color-swatch" data-color="#6c3483" style="background: #6c3483" title="Purple"></div>
+        <div class="color-swatch" data-color="#922b21" style="background: #922b21" title="Crimson"></div>
+        <div class="color-swatch" data-color="#b7950b" style="background: #b7950b" title="Gold"></div>
+        <div class="color-swatch" data-color="#1e8449" style="background: #1e8449" title="Emerald"></div>
+        <div class="color-swatch" data-color="#ca6f1e" style="background: #ca6f1e" title="Amber"></div>
+        <div class="color-swatch" data-color="#148f77" style="background: #148f77" title="Teal"></div>
+        <div class="color-swatch" data-color="#c2185b" style="background: #c2185b" title="Pink"></div>
+      </div>
+      <div class="sidebar-panel hidden" id="texture-panel">
+        <div class="texture-option active" data-texture="metallic" title="Metallic">
+          <div class="texture-preview" style="background: linear-gradient(135deg, #3a7bd5, #6cb4ee);"></div>
+          <span>Metal</span>
+        </div>
+        <div class="texture-option" data-texture="matte" title="Matte">
+          <div class="texture-preview" style="background: #5a7a9a;"></div>
+          <span>Matte</span>
+        </div>
+        <div class="texture-option" data-texture="chrome" title="Chrome">
+          <div class="texture-preview" style="background: linear-gradient(135deg, #e8e8e8, #888, #e8e8e8);"></div>
+          <span>Chrome</span>
+        </div>
+        <div class="texture-option" data-texture="neon" title="Neon Glow">
+          <div class="texture-preview" style="background: radial-gradient(circle, #4fc3f7, #0a2a3f);"></div>
+          <span>Neon</span>
+        </div>
+        <div class="texture-option" data-texture="glass" title="Glass">
+          <div class="texture-preview" style="background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.05)); border: 1px solid rgba(255,255,255,0.2);"></div>
+          <span>Glass</span>
+        </div>
+        <div class="texture-option" data-texture="plastic" title="Plastic">
+          <div class="texture-preview" style="background: linear-gradient(160deg, #5b9bd5, #3a6fa0);"></div>
+          <span>Plastic</span>
+        </div>
+        <div class="texture-option" data-texture="wireframe" title="Wireframe">
+          <div class="texture-preview wireframe-preview"></div>
+          <span>Wire</span>
+        </div>
+      </div>
     </div>
 
     <div id="loading" class="loading-overlay">
