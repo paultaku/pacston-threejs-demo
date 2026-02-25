@@ -1,0 +1,9 @@
+{
+  "name": "threejs-3d-logo-demo",
+  "version": "1.0.0",
+  "description": "Interactive 3D Logo with Three.js — Pacston Demo",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "private": true
+}

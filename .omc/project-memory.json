@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1772012271555,
+  "projectRoot": "/Users/paultaku/Projects/threeJS-demo",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": "npm run start",
+    "scripts": {
+      "start": "npx serve ."
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "docs"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 0,
+      "lastAccessed": 1772012271528,
+      "keyFiles": []
+    },
+    "css": {
+      "path": "css",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1772012271536,
+      "keyFiles": [
+        "styles.css"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1772012271538,
+      "keyFiles": [
+        "TECHNICAL.md"
+      ]
+    },
+    "js": {
+      "path": "js",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1772012271538,
+      "keyFiles": [
+        "animation.js",
+        "effects.js",
+        "interaction.js",
+        "logo.js",
+        "main.js"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "js/main.js",
+      "accessCount": 7,
+      "lastAccessed": 1772012727513,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 6,
+      "lastAccessed": 1772012726727,
+      "type": "file"
+    },
+    {
+      "path": "js/logo.js",
+      "accessCount": 5,
+      "lastAccessed": 1772012727205,
+      "type": "file"
+    },
+    {
+      "path": "css/styles.css",
+      "accessCount": 5,
+      "lastAccessed": 1772012727896,
+      "type": "file"
+    },
+    {
+      "path": "js/scene.js",
+      "accessCount": 2,
+      "lastAccessed": 1772012504479,
+      "type": "file"
+    },
+    {
+      "path": "js/interaction.js",
+      "accessCount": 2,
+      "lastAccessed": 1772012504982,
+      "type": "file"
+    },
+    {
+      "path": "js/effects.js",
+      "accessCount": 2,
+      "lastAccessed": 1772012505268,
+      "type": "file"
+    },
+    {
+      "path": "js/animation.js",
+      "accessCount": 2,
+      "lastAccessed": 1772012505656,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 1,
+      "lastAccessed": 1772012461279,
+      "type": "file"
+    },
+    {
+      "path": "js/utils.js",
+      "accessCount": 1,
+      "lastAccessed": 1772012464623,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

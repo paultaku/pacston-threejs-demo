@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pacston 3D Logo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>M</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Import map feature detection -->
+  <script>
+    if (!HTMLScriptElement.supports || !HTMLScriptElement.supports('importmap')) {
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('fallback').style.display = 'flex';
+        var canvas = document.getElementById('three-canvas');
+        if (canvas) canvas.style.display = 'none';
+        var loading = document.getElementById('loading');
+        if (loading) loading.style.display = 'none';
+      });
+    }
+  </script>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.182.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.182.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="three-canvas" role="img" aria-label="Interactive 3D rotating M logo"></canvas>
+
+  <div id="text-input-container" class="text-input-container">
+    <input type="text" id="text-input" class="text-input" value="M" maxlength="10" placeholder="Type here..." autocomplete="off" spellcheck="false">
+  </div>
+
+  <div id="loading" class="loading-overlay">
+    <div class="loading-content">
+      <span class="loading-letter">M</span>
+      <p class="loading-text">Loading...</p>
+    </div>
+  </div>
+
+  <div id="fallback" class="fallback-message">
+    <div class="fallback-content">
+      <span class="fallback-letter">M</span>
+      <p>Your browser does not support WebGL.</p>
+      <p>Please use a modern browser (Chrome 89+, Firefox 108+, Safari 16.4+).</p>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
