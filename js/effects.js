@@ -2,8 +2,10 @@
  * Visual effects: particle system, hover color shifts.
  */
 import * as THREE from "three";
+import { TIFFLoader } from "three/addons/loaders/TIFFLoader.js";
 
 const textureLoader = new THREE.TextureLoader();
+const tiffLoader = new TIFFLoader();
 const textureCache = {};
 
 const PARTICLE_CONFIG = {
@@ -258,7 +260,7 @@ const TEXTURE_PRESETS = {
     opacity: 1.0,
     baseEI: 0.1,
     hoverEI: 0.3,
-    texturePath: "./assets/textures/wood.jpg",
+    texturePath: "./assets/textures/wood.tif",
   },
   marble: {
     metalness: 0.3,
@@ -268,7 +270,7 @@ const TEXTURE_PRESETS = {
     opacity: 1.0,
     baseEI: 0.2,
     hoverEI: 0.4,
-    texturePath: "./assets/textures/marble.jpg",
+    texturePath: "./assets/textures/marble.tif",
   },
   brick: {
     metalness: 0.0,
@@ -288,7 +290,7 @@ const TEXTURE_PRESETS = {
     opacity: 1.0,
     baseEI: 0.1,
     hoverEI: 0.3,
-    texturePath: "./assets/textures/stone.jpg",
+    texturePath: "./assets/textures/stone.tif",
   },
 };
 
@@ -299,7 +301,10 @@ const TEXTURE_PRESETS = {
  */
 function loadCachedTexture(path) {
   if (!textureCache[path]) {
-    textureCache[path] = textureLoader.load(
+    const isTiff = /\.tiff?$/i.test(path);
+    const loader = isTiff ? tiffLoader : textureLoader;
+
+    textureCache[path] = loader.load(
       path,
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
