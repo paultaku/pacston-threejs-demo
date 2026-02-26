@@ -133,14 +133,38 @@ const _tmpHSL = {};
 
 let currentHoverFactor = 0;
 
+// Track whether an image texture is active
+let hasImageTexture = false;
+
+// Saved user color for restoring when switching from texture to solid
+const savedBaseColor = new THREE.Color(0x1a5276);
+
+// White-based colors for when image texture is active
+const TEX_BASE_COLOR = new THREE.Color(0xffffff);
+const TEX_HOVER_COLOR = new THREE.Color(0xffffff);
+const TEX_BASE_EMISSIVE = new THREE.Color(0x222222);
+const TEX_HOVER_EMISSIVE = new THREE.Color(0x666666);
+
 /**
  * Derive hover and emissive colors from a base color.
+ * Saved for restoring when switching away from image textures.
  * @param {string} hexColor - CSS hex color like "#1a5276"
  */
 export function setBaseColor(hexColor) {
+  savedBaseColor.set(hexColor);
+
+  // Only apply to rendering colors if no image texture is active
+  if (!hasImageTexture) {
+    _applyColorScheme(hexColor);
+  }
+}
+
+/**
+ * Internal: apply a color scheme to the rendering color targets.
+ */
+function _applyColorScheme(hexColor) {
   baseColor.set(hexColor);
 
-  // Hover color: lighter version
   baseColor.getHSL(_tmpHSL);
   hoverColor.setHSL(
     _tmpHSL.h,
@@ -148,10 +172,8 @@ export function setBaseColor(hexColor) {
     Math.min(0.65, _tmpHSL.l * 1.5),
   );
 
-  // Emissive: dark version of the base
   baseEmissive.setHSL(_tmpHSL.h, _tmpHSL.s * 0.8, _tmpHSL.l * 0.4);
 
-  // Hover emissive: bright saturated version
   hoverEmissive.setHSL(
     _tmpHSL.h,
     Math.min(1, _tmpHSL.s * 1.2),
@@ -256,7 +278,7 @@ const TEXTURE_PRESETS = {
     opacity: 1.0,
     baseEI: 0.1,
     hoverEI: 0.3,
-    texturePath: "./assets/textures/brick.jpg",
+    texturePath: "./assets/textures/brick.tif",
   },
   stone: {
     metalness: 0.1,
@@ -271,7 +293,7 @@ const TEXTURE_PRESETS = {
 };
 
 /**
- * Load a texture with caching.
+ * Load a texture with caching and proper wrapping.
  * @param {string} path
  * @returns {THREE.Texture}
  */
@@ -281,6 +303,9 @@ function loadCachedTexture(path) {
       path,
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(2, 2);
       },
       undefined,
       (err) => {
@@ -293,7 +318,8 @@ function loadCachedTexture(path) {
 
 /**
  * Apply a texture preset to the material.
- * Supports both solid presets and image-based textures.
+ * When an image texture is active, switches to white color mode
+ * so the texture's true colors show through.
  * @param {THREE.MeshStandardMaterial} material
  * @param {string} presetName
  */
@@ -311,13 +337,25 @@ export function applyTexturePreset(material, presetName) {
   // Apply or clear image texture
   if (preset.texturePath) {
     material.map = loadCachedTexture(preset.texturePath);
+    hasImageTexture = true;
+
+    // Switch to white color mode so texture shows true colors
+    baseColor.copy(TEX_BASE_COLOR);
+    hoverColor.copy(TEX_HOVER_COLOR);
+    baseEmissive.copy(TEX_BASE_EMISSIVE);
+    hoverEmissive.copy(TEX_HOVER_EMISSIVE);
+    baseEmissiveIntensity = preset.baseEI;
+    hoverEmissiveIntensity = preset.hoverEI;
   } else {
     material.map = null;
+    hasImageTexture = false;
+
+    // Restore user-selected color scheme
+    _applyColorScheme(savedBaseColor);
+    baseEmissiveIntensity = preset.baseEI;
+    hoverEmissiveIntensity = preset.hoverEI;
   }
   material.needsUpdate = true;
-
-  baseEmissiveIntensity = preset.baseEI;
-  hoverEmissiveIntensity = preset.hoverEI;
 }
 
 /**
