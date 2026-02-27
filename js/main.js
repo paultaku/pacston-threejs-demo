@@ -19,6 +19,7 @@ import {
   updateMaterialOnHover,
   setBaseColor,
   applyTexturePreset,
+  disposeAllTextures,
 } from "./effects.js";
 import Stats from "three/addons/libs/stats.module.js";
 
@@ -58,7 +59,7 @@ async function init() {
 
     // Load 3D logo and GLTF model in parallel
     const [logoMesh, { model: modelGroup, mixer }] = await Promise.all([
-      createLogo(scene),
+      createLogo(scene, quality),
       loadModel(scene),
     ]);
     const logoMaterial = logoMesh.material;
@@ -179,6 +180,7 @@ async function init() {
       loop.stop();
       interaction.dispose();
       particleSystem.dispose();
+      disposeAllTextures();
       dispose(scene);
       composer.dispose();
       renderer.dispose();

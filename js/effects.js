@@ -11,7 +11,8 @@ const textureCache = {};
 const PARTICLE_CONFIG = {
   high: { count: 300, innerRadius: 4, outerRadius: 6 },
   medium: { count: 200, innerRadius: 4, outerRadius: 6 },
-  low: { count: 150, innerRadius: 4, outerRadius: 6 },
+  // More aggressive reduction for low-end devices
+  low: { count: 90, innerRadius: 3.5, outerRadius: 5 },
 };
 
 export class ParticleSystem {
@@ -319,6 +320,25 @@ function loadCachedTexture(path) {
     );
   }
   return textureCache[path];
+}
+
+/**
+ * Dispose and clear all cached textures.
+ * Intended to be called from the global cleanup pipeline.
+ */
+export function disposeAllTextures() {
+  for (const key in textureCache) {
+    const texture = textureCache[key];
+    if (texture && typeof texture.dispose === "function") {
+      texture.dispose();
+    }
+    delete textureCache[key];
+  }
+
+  // Reset texture-related state so subsequent sessions start clean
+  hasImageTexture = false;
+  _applyColorScheme(savedBaseColor);
+  currentHoverFactor = 0;
 }
 
 /**

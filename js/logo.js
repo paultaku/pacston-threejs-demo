@@ -9,6 +9,7 @@ const LOCAL_FONT_PATH = './assets/fonts/helvetiker_bold.typeface.json';
 const CDN_FONT_PATH = 'https://cdn.jsdelivr.net/npm/three@0.182.0/examples/fonts/helvetiker_bold.typeface.json';
 
 let loadedFont = null;
+let currentQuality = 'high';
 
 /**
  * Load font with local-first, CDN-fallback strategy.
@@ -26,23 +27,32 @@ async function loadFont() {
 
 /**
  * Create a TextGeometry for the given string.
- * Auto-scales size to fit longer strings.
+ * Auto-scales size to fit longer strings, and adjusts detail by quality tier.
+ * @param {string} text
+ * @param {import('three/addons/loaders/FontLoader.js').Font} font
+ * @param {'low'|'medium'|'high'} [quality='high']
  */
-function createTextGeometry(text, font) {
+function createTextGeometry(text, font, quality = 'high') {
   const displayText = text || 'M';
   const size = Math.min(3, 10 / displayText.length);
   const clampedSize = Math.max(0.8, size);
   const depth = clampedSize * 0.27;
 
+  const isLow = quality === 'low';
+  const curveSegments = isLow ? 8 : 12;
+  const bevelSegments = isLow ? 3 : 5;
+  const bevelThickness = isLow ? 0.06 : 0.08;
+  const bevelSize = isLow ? 0.04 : 0.05;
+
   const geometry = new TextGeometry(displayText, {
     font,
     size: clampedSize,
     depth,
-    curveSegments: 12,
+    curveSegments,
     bevelEnabled: true,
-    bevelThickness: 0.08,
-    bevelSize: 0.05,
-    bevelSegments: 5
+    bevelThickness,
+    bevelSize,
+    bevelSegments
   });
 
   geometry.computeBoundingBox();
@@ -53,12 +63,14 @@ function createTextGeometry(text, font) {
 /**
  * Create the 3D logo mesh and add it to the scene.
  * @param {THREE.Scene} scene
+ * @param {'low'|'medium'|'high'} [quality='high']
  * @returns {Promise<THREE.Mesh>}
  */
-export async function createLogo(scene) {
+export async function createLogo(scene, quality = 'high') {
   loadedFont = await loadFont();
+  currentQuality = quality;
 
-  const geometry = createTextGeometry('M', loadedFont);
+  const geometry = createTextGeometry('M', loadedFont, quality);
 
   const material = new THREE.MeshStandardMaterial({
     color: 0x1a5276,
@@ -85,6 +97,6 @@ export function updateLogoText(mesh, text) {
   if (!loadedFont) return;
 
   const oldGeometry = mesh.geometry;
-  mesh.geometry = createTextGeometry(text, loadedFont);
+  mesh.geometry = createTextGeometry(text, loadedFont, currentQuality);
   oldGeometry.dispose();
 }

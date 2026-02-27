@@ -4,8 +4,8 @@
 
 export class AnimationController {
   constructor() {
-    this.idleSpeed = 0.3;    // rad/s
-    this.hoverSpeed = 1.8;   // rad/s (~6x)
+    this.idleSpeed = 0.3; // rad/s
+    this.hoverSpeed = 2.4; // rad/s (~6x)
     this.easeFactor = 3.0;
     this.currentSpeed = this.idleSpeed;
     this.targetSpeed = this.idleSpeed;
@@ -26,7 +26,6 @@ export class AnimationController {
    * @param {boolean} hovered
    */
   setHovered(hovered) {
-    console.log('setHovered', hovered);
     this.isHovered = hovered;
     this.targetSpeed = hovered ? this.hoverSpeed : this.idleSpeed;
   }
@@ -39,12 +38,16 @@ export class AnimationController {
     this.elapsed += deltaTime;
 
     // Exponential decay easing for rotation speed
-    this.currentSpeed += (this.targetSpeed - this.currentSpeed)
-      * (1 - Math.exp(-this.easeFactor * deltaTime));
+    this.currentSpeed +=
+      (this.targetSpeed - this.currentSpeed) *
+      (1 - Math.exp(-this.easeFactor * deltaTime));
 
     // Entrance animation progress
     if (this.entranceProgress < 1) {
-      this.entranceProgress = Math.min(1, this.entranceProgress + deltaTime / this.entranceDuration);
+      this.entranceProgress = Math.min(
+        1,
+        this.entranceProgress + deltaTime / this.entranceDuration,
+      );
     }
   }
 
@@ -82,8 +85,16 @@ export class AnimationController {
  */
 export function createAnimationLoop(deps) {
   const {
-    logoMesh, modelGroup, mixer, animationController, particleSystem,
-    composer, interaction, logoMaterial, updateMaterial, stats
+    logoMesh,
+    modelGroup,
+    mixer,
+    animationController,
+    particleSystem,
+    composer,
+    interaction,
+    logoMaterial,
+    updateMaterial,
+    stats,
   } = deps;
 
   let lastTime = 0;
@@ -145,7 +156,7 @@ export function createAnimationLoop(deps) {
       lastTime = performance.now();
     }
   }
-  document.addEventListener('visibilitychange', onVisibilityChange);
+  document.addEventListener("visibilitychange", onVisibilityChange);
 
   // Start
   lastTime = performance.now();
@@ -154,7 +165,7 @@ export function createAnimationLoop(deps) {
   return {
     stop() {
       if (animationId) cancelAnimationFrame(animationId);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-    }
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    },
   };
 }
