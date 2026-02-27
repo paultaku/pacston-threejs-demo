@@ -70,6 +70,8 @@ export class AnimationController {
  * Create and start the main animation loop.
  * @param {Object} deps
  * @param {import('three').Mesh} deps.logoMesh
+ * @param {import('three').Group} [deps.modelGroup]
+ * @param {import('three').AnimationMixer} [deps.mixer]
  * @param {AnimationController} deps.animationController
  * @param {import('./effects.js').ParticleSystem} deps.particleSystem
  * @param {import('three/addons/postprocessing/EffectComposer.js').EffectComposer} deps.composer
@@ -80,8 +82,8 @@ export class AnimationController {
  */
 export function createAnimationLoop(deps) {
   const {
-    logoMesh, animationController, particleSystem,
-    composer, interaction, logoMaterial, updateMaterial
+    logoMesh, modelGroup, mixer, animationController, particleSystem,
+    composer, interaction, logoMaterial, updateMaterial, stats
   } = deps;
 
   let lastTime = 0;
@@ -105,18 +107,27 @@ export function createAnimationLoop(deps) {
 
     const isHovered = animationController.isHovered;
 
-    // Apply rotation
-    logoMesh.rotation.y += animationController.currentSpeed * deltaTime;
-
     // Entrance animation
     const scale = animationController.getEntranceScale();
+    const bobbingY = animationController.getBobbingY();
+
+    // Animate text logo
+    logoMesh.rotation.y += animationController.currentSpeed * deltaTime;
     logoMesh.scale.setScalar(scale);
-
-    // Bobbing
-    logoMesh.position.y = animationController.getBobbingY();
-
-    // Parallax tilt
+    logoMesh.position.y = bobbingY;
     interaction.applyTilt(logoMesh, deltaTime);
+
+    // Animate GLTF model
+    if (modelGroup) {
+      modelGroup.rotation.y += animationController.currentSpeed * deltaTime;
+      modelGroup.position.y = bobbingY;
+      interaction.applyTilt(modelGroup, deltaTime);
+    }
+
+    // Update GLTF animation mixer
+    if (mixer) {
+      mixer.update(deltaTime);
+    }
 
     // Particle + material effects
     particleSystem.update(deltaTime, isHovered);
@@ -124,6 +135,7 @@ export function createAnimationLoop(deps) {
 
     // Render
     composer.render();
+    if (stats) stats.update();
   }
 
   // Visibility handling

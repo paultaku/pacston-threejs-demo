@@ -266,3 +266,59 @@ html, body {
     linear-gradient(90deg, rgba(200, 214, 229, 0.3) 1px, transparent 1px);
   background-size: 8px 8px;
 }
+
+/* Scene toggle */
+.scene-toggle {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 0;
+  background: rgba(10, 10, 26, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(74, 144, 217, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.scene-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: rgba(200, 214, 229, 0.4);
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.scene-btn:hover {
+  color: rgba(200, 214, 229, 0.7);
+  background: rgba(74, 144, 217, 0.08);
+}
+
+.scene-btn.active {
+  color: #c8d6e5;
+  background: rgba(74, 144, 217, 0.15);
+}
+
+.scene-btn + .scene-btn {
+  border-left: 1px solid rgba(74, 144, 217, 0.2);
+}
+
+/* Hide text input in model mode */
+.text-input-container.hidden {
+  display: none;
+}
+
+/* Performance monitor */
+#stats {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+}

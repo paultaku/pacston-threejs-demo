@@ -11,6 +11,7 @@ import {
 } from "./utils.js";
 import { createScene } from "./scene.js";
 import { createLogo, updateLogoText } from "./logo.js";
+import { loadModel } from "./model.js";
 import { AnimationController, createAnimationLoop } from "./animation.js";
 import { InteractionManager } from "./interaction.js";
 import {
@@ -19,6 +20,7 @@ import {
   setBaseColor,
   applyTexturePreset,
 } from "./effects.js";
+import Stats from "three/addons/libs/stats.module.js";
 
 const LOADING_TIMEOUT_MS = 15000;
 
@@ -49,8 +51,16 @@ async function init() {
     // Create scene once with the correct quality
     const { scene, camera, renderer, composer } = createScene(canvas, quality);
 
-    // Load 3D logo
-    const logoMesh = await createLogo(scene);
+    // Performance monitor
+    const stats = new Stats();
+    stats.dom.id = "stats";
+    document.body.appendChild(stats.dom);
+
+    // Load 3D logo and GLTF model in parallel
+    const [logoMesh, { model: modelGroup, mixer }] = await Promise.all([
+      createLogo(scene),
+      loadModel(scene),
+    ]);
     const logoMaterial = logoMesh.material;
 
     // Animation controller
@@ -83,6 +93,27 @@ async function init() {
     // Clear loading timeout and hide overlay
     clearTimeout(loadingTimer);
     hideLoading();
+
+    // --- Scene toggle ---
+    const textInputContainer = document.getElementById("text-input-container");
+    const sceneButtons = document.querySelectorAll(".scene-btn");
+    sceneButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        sceneButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const mode = btn.dataset.scene;
+        if (mode === "text") {
+          logoMesh.visible = true;
+          modelGroup.visible = false;
+          textInputContainer.classList.remove("hidden");
+        } else {
+          logoMesh.visible = false;
+          modelGroup.visible = true;
+          textInputContainer.classList.add("hidden");
+        }
+      });
+    });
 
     // Text input — update 3D text as user types
     const textInput = document.getElementById("text-input");
@@ -127,12 +158,15 @@ async function init() {
     // Start animation loop
     const loop = createAnimationLoop({
       logoMesh,
+      modelGroup,
+      mixer,
       animationController,
       particleSystem,
       composer,
       interaction,
       logoMaterial,
       updateMaterial: updateMaterialOnHover,
+      stats,
     });
 
     // Cleanup function (for potential SPA embedding)
@@ -144,6 +178,7 @@ async function init() {
       composer.dispose();
       renderer.dispose();
       window.removeEventListener("resize", handleResize);
+      stats.dom.remove();
     };
   } catch (error) {
     console.error("Failed to initialize 3D demo:", error);

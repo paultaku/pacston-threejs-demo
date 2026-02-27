@@ -42,6 +42,21 @@
       aria-label="Interactive 3D rotating M logo"
     ></canvas>
 
+    <div id="scene-toggle" class="scene-toggle">
+      <button class="scene-btn active" data-scene="text" title="Text Scene">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <text x="3" y="13" font-size="13" font-weight="bold" fill="currentColor">T</text>
+        </svg>
+      </button>
+      <button class="scene-btn" data-scene="model" title="3D Model Scene">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <polygon points="8,1 15,5 15,11 8,15 1,11 1,5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <line x1="8" y1="1" x2="8" y2="15" stroke="currentColor" stroke-width="1"/>
+          <line x1="1" y1="5" x2="15" y2="5" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </button>
+    </div>
+
     <div id="text-input-container" class="text-input-container">
       <input
         type="text"
