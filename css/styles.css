@@ -152,6 +152,10 @@ html, body {
   overflow: hidden;
 }
 
+.sidebar.hidden {
+  display: none;
+}
+
 /* Tab buttons */
 .sidebar-tabs {
   display: flex;

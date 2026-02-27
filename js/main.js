@@ -96,6 +96,7 @@ async function init() {
 
     // --- Scene toggle ---
     const textInputContainer = document.getElementById("text-input-container");
+    const sidebar = document.getElementById("sidebar");
     const sceneButtons = document.querySelectorAll(".scene-btn");
     sceneButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -107,10 +108,12 @@ async function init() {
           logoMesh.visible = true;
           modelGroup.visible = false;
           textInputContainer.classList.remove("hidden");
+          sidebar.classList.remove("hidden");
         } else {
           logoMesh.visible = false;
           modelGroup.visible = true;
           textInputContainer.classList.add("hidden");
+          sidebar.classList.add("hidden");
         }
       });
     });
@@ -131,7 +134,9 @@ async function init() {
         sidebarTabs.forEach((t) => t.classList.remove("active"));
         tab.classList.add("active");
         const panelId = tab.dataset.panel + "-panel";
-        sidebarPanels.forEach((p) => p.classList.toggle("hidden", p.id !== panelId));
+        sidebarPanels.forEach((p) =>
+          p.classList.toggle("hidden", p.id !== panelId),
+        );
       });
     });
 
